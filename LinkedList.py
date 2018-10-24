@@ -117,19 +117,6 @@ class Doublylinkedlist:
                     nextnode = current.getright()
                 prevnode.right = nextnode
                 nextnode.left = prevnode
-    # Sort the List
-    def sortlist(self):
-        print"sortlist"
-    # Remove Duplicate from List
-    def removeduplicate(self):
-        print"remove duplicate"
-    #Reverse the list
-    def reverse(self):
-        print "Reverselist"
-    # Remove Specific value
-    def removespecific(self, value):
-        print "Remove Specific Value"
-
 def main():
     # Create the list
     list = Doublylinkedlist()
