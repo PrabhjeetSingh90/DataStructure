@@ -2,7 +2,7 @@
 #
 # Author:      prabhjeet Singh
 #
-# Pupose : Implementation of Stack and Queue operations using linked list
+# Purpose : Implementation of Stack and Queue operations using linked list
 #
 #-------------------------------------------------------------------------------
 
