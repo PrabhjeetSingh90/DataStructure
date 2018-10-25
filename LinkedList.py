@@ -2,7 +2,7 @@
 #
 # Author:      prabhjeet Singh
 #
-# Pupose : Implementation of Linked List Operations
+# Purpose : Implementation of Linked List Operations
 #
 #-------------------------------------------------------------------------------
 
