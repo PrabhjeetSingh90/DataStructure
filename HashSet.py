@@ -22,7 +22,7 @@ class bucket:
 
     def __init__(self, val=20):
         for x in range(val):
-            self.__arr.insert(x,0)
+            self.__arr.append(None)
         self.__Size = val
 
     def TraverseBucket(self):
@@ -37,7 +37,7 @@ class bucket:
         return self.__Size
 
     def insertelement(self, key, data):
-        if (self.__arr[key] == 0):
+        if (self.__arr[key] == None):
             new = Snode(data)
             new.right = None
             self.__arr[key] = new
