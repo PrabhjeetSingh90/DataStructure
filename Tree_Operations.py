@@ -2,10 +2,7 @@
 #
 # Author:      prabhjeet Singh
 #
-# Purpose : The Purpose of the code is to implement the software cache
-#           Here are some of the assumptions taken:
-#           1. The memory is limited and size is provided by command line argument
-#           2. The algorithm used to evict the element is LRU(Least Recently Used)
+# Purpose : 
 #
 #-------------------------------------------------------------------------------
 class Dnode:
