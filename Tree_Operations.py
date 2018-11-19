@@ -2,10 +2,11 @@
 #
 # Author:      prabhjeet Singh
 #
-# Purpose : The Puspose of this code is to demonstrate basic operations on 
+# Purpose : The Puspose of this code is to demonstrate basic operations on
 #           various types of tree structures.
 #
 #-------------------------------------------------------------------------------
+import Queue
 class Dnode:
     __value = None
     __leftchild = None
@@ -36,42 +37,43 @@ class binarytree:
     __head = None
     def __init__(self, node = None):
         self.__head = node
-        
+
     def gethead(self):
         return self.__head
-    
+
     def sethead(self, node= None):
         self.__head = node
-        
-    def insert(self, node = None, Key = None):
-        pass
-    
-    def display(self, node= None, type = "inorder"):
-        pass
-    
-class binarysearchtree:
-    __head = None
-    def __init__(self, node = None):
-        self.__head = node
-        
-    def gethead(self):
-        return self.__head
-    
-    def sethead(self, node= None):
-        self.__head = node
-        
+
     def insert(self, node = None, key = None):
+        # Create a Queue to Store Node while traversing the tree level order
+        Q = Queue.Queue(100)
+        # if root is none. This is first node to insert
         if (node == None):
             node = Dnode(key)
-        else:
-            if(node.getvalue() > key):
-                node.setleftchild(self.insert(node.getleftchild(),key))
-            else:
-                node.setrightchild(self.insert(node.getrightchild(),key) )
-        return node
-            
+            return node
+        else: # Not the first Node
+            Q.put(node) # Add head to Queue
+
+            while(Q.empty() == False): # Loop until Queue is Empty
+                # Fetch the first node from Queue
+                newnode = Q.get()
+                 # if left node is null than insert and break loop
+                if newnode.getleftchild() == None:
+                    newnode.setleftchild(Dnode(key))
+                    break
+                else: # Else push left node address to queue
+                    Q.put(newnode.getleftchild())
+
+                # if right node is null than insert and breakloop
+                if newnode.getrightchild() == None:
+                    newnode.setrightchild(Dnode(key))
+                    break
+                else: # Else insert right node address to Queue
+                    Q.put(newnode.getrightchild())
+        return node # Return the head value back.
+
     def display(self, node= None, type = "inorder"):
-        #Displaying in Inorder Traversal 
+        #Displaying in Inorder Traversal
         if type == "inorder":
             if node:
                 self.display(node.getleftchild(), "inorder")
@@ -87,10 +89,49 @@ class binarysearchtree:
                 self.display(node.getleftchild(), "postorder")
                 self.display(node.getrightchild(), "postorder")
                 print (" postorder node value = " + str(node.getvalue()))
-                
+
+class binarysearchtree:
+    __head = None
+    def __init__(self, node = None):
+        self.__head = node
+
+    def gethead(self):
+        return self.__head
+
+    def sethead(self, node= None):
+        self.__head = node
+
+    def insert(self, node = None, key = None):
+        if (node == None):
+            node = Dnode(key)
+        else:
+            if(node.getvalue() > key):
+                node.setleftchild(self.insert(node.getleftchild(),key))
+            else:
+                node.setrightchild(self.insert(node.getrightchild(),key))
+        return node
+
+    def display(self, node= None, type = "inorder"):
+        #Displaying in Inorder Traversal
+        if type == "inorder":
+            if node:
+                self.display(node.getleftchild(), "inorder")
+                print (" inorder node value = " + str(node.getvalue()))
+                self.display(node.getrightchild(), "inorder")
+        elif type == "preorder":
+            if node:
+                print (" preorder node value = " + str(node.getvalue()))
+                self.display(node.getleftchild(), "preorder")
+                self.display(node.getrightchild(), "preorder")
+        elif type == "postorder":
+            if node:
+                self.display(node.getleftchild(), "postorder")
+                self.display(node.getrightchild(), "postorder")
+                print (" postorder node value = " + str(node.getvalue()))
+
     def remove(self, key):
         pass
-    
+
 class avltree:
     pass
 
@@ -118,7 +159,7 @@ class heapstruct:
 class testcases:
     def __init__(self):
         pass
-    
+
     def TC_binarysearchtree(self):
         # Create Instance Of Binary Search Tree Class
         bst = binarysearchtree()
@@ -135,15 +176,19 @@ class testcases:
         bst.display(bst.gethead(), "inorder")
         bst.display(bst.gethead(), "preorder")
         bst.display(bst.gethead(), "postorder")
-        
+
     def TC_binarytree(self):
         #create instance of binary tree
         btree = binarytree()
         # Generate Binary Tree by inserting element by element
         btree.sethead(btree.insert(btree.gethead(), 50))
+        btree.sethead(btree.insert(btree.gethead(), 30))
+        btree.sethead(btree.insert(btree.gethead(), 40))
+        btree.sethead(btree.insert(btree.gethead(), 10))
         # Display Binary Tree
         btree.display(btree.gethead(), "inorder")
-        
+        print btree.gethead()
+
 
 def main():
     tc = testcases()
