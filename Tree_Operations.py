@@ -7,6 +7,7 @@
 #
 #-------------------------------------------------------------------------------
 import Queue
+
 class Dnode:
     __value = None
     __leftchild = None
@@ -32,7 +33,43 @@ class Dnode:
     def setrightchild(self, rightchild = None):
         self.__rightchild = rightchild
 
+class AVLDnode(Dnode):
+    __heigth = None
+    def __init__(self, value = None, height = None, leftchild = None, rightchild = None):
+        self.__heigth = height
+        Dnode.__init__(self, value, leftchild, rightchild)
 
+    # Get Functions
+    def getheigth(self):
+        return self.__heigth
+
+    # Set Functions
+    def setheight(self, height = None):
+        self.__heigth = height
+
+class display:
+    def __int__(self):
+        pass
+
+    def display(self, node= None, type = "inorder"):
+        #Displaying in Inorder Traversal
+        if type == "inorder":
+            if node:
+                self.display(node.getleftchild(), "inorder")
+                print (" inorder node value = " + str(node.getvalue()))
+                self.display(node.getrightchild(), "inorder")
+        elif type == "preorder":
+            if node:
+                print (" preorder node value = " + str(node.getvalue()))
+                self.display(node.getleftchild(), "preorder")
+                self.display(node.getrightchild(), "preorder")
+        elif type == "postorder":
+            if node:
+                self.display(node.getleftchild(), "postorder")
+                self.display(node.getrightchild(), "postorder")
+                print (" postorder node value = " + str(node.getvalue()))
+
+# Complete Binary Tree
 class binarytree:
     __head = None
     def __init__(self, node = None):
@@ -46,6 +83,7 @@ class binarytree:
 
     def insert(self, node = None, key = None):
         # Create a Queue to Store Node while traversing the tree level order
+        # Queue Size will create a issue with scalability.
         Q = Queue.Queue(100)
         # if root is none. This is first node to insert
         if (node == None):
@@ -72,24 +110,11 @@ class binarytree:
                     Q.put(newnode.getrightchild())
         return node # Return the head value back.
 
-    def display(self, node= None, type = "inorder"):
-        #Displaying in Inorder Traversal
-        if type == "inorder":
-            if node:
-                self.display(node.getleftchild(), "inorder")
-                print (" inorder node value = " + str(node.getvalue()))
-                self.display(node.getrightchild(), "inorder")
-        elif type == "preorder":
-            if node:
-                print (" preorder node value = " + str(node.getvalue()))
-                self.display(node.getleftchild(), "preorder")
-                self.display(node.getrightchild(), "preorder")
-        elif type == "postorder":
-            if node:
-                self.display(node.getleftchild(), "postorder")
-                self.display(node.getrightchild(), "postorder")
-                print (" postorder node value = " + str(node.getvalue()))
-
+#############
+# This is an ordered binary tree where all the elements in the left subtree is
+# less than root and all the elements on right subtree is  greater than root
+# for every node.
+###########
 class binarysearchtree:
     __head = None
     def __init__(self, node = None):
@@ -107,33 +132,78 @@ class binarysearchtree:
         else:
             if(node.getvalue() > key):
                 node.setleftchild(self.insert(node.getleftchild(),key))
-            else:
+            elif(node.getvalue() < key):
                 node.setrightchild(self.insert(node.getrightchild(),key))
         return node
 
-    def display(self, node= None, type = "inorder"):
-        #Displaying in Inorder Traversal
-        if type == "inorder":
-            if node:
-                self.display(node.getleftchild(), "inorder")
-                print (" inorder node value = " + str(node.getvalue()))
-                self.display(node.getrightchild(), "inorder")
-        elif type == "preorder":
-            if node:
-                print (" preorder node value = " + str(node.getvalue()))
-                self.display(node.getleftchild(), "preorder")
-                self.display(node.getrightchild(), "preorder")
-        elif type == "postorder":
-            if node:
-                self.display(node.getleftchild(), "postorder")
-                self.display(node.getrightchild(), "postorder")
-                print (" postorder node value = " + str(node.getvalue()))
 
-    def remove(self, key):
+#############
+# This is a self balancing Binary Search tree where the height difference
+# between left subtree and right subtree is not more than one for any node.
+###########
+class avltree:
+    __head = None
+
+    def __inti__(self, node = None):
+        self.__head = node
+
+    def gethead(self):
+        return self.__head
+
+    def sethead(self, node = None):
+        self.__head = node
+
+    def insert(self, node = None, key = None):
         pass
 
-class avltree:
-    pass
+    def __rotateleft(self, node= None):
+        newhead = node.getrightchild()
+        temp = newhead.getleftchild()
+
+        newhead.setleftchild(node)
+        node.setrightchild(temp)
+
+        newheadL = newhead.getleftchild()
+        newheadR = newhead.getrightchild()
+
+        newhead.setheight(1 + max(newheadL.getheight(), newheadR.getheight()))
+
+        nodeL = node.getleftchild()
+        nodeR = node.getrightchild()
+
+        node.setheight(1 + max(nodeL.getheight(), nodeR.getheight()))
+
+        return newhead
+
+    def __rotateright(self, node = None):
+        newhead = node.getleftchild()
+        temp = newhead.getrightchild()
+
+        newhead.setrightchild(node)
+        node.setleftchild(temp)
+
+        newheadL = newhead.getleftchild()
+        newheadR = newhead.getrightchild()
+
+        newhead.setheight(1 + max(newheadL.getheight(), newheadR.getheight()))
+
+        nodeL = node.getleftchild()
+        nodeR = node.getrightchild()
+
+        node.setheight(1 + max(nodeL.getheight(), nodeR.getheight()))
+
+        return newhead
+
+    def __getbalance(self, node = None):
+        if node == None:
+            return 0;
+        else:
+            leftnode = node.getleftchild()
+            rightnode = node.getrightchild()
+            bal = leftnode.getheight() - rightnode.getheight()
+            return bal
+
+
 
 class redblacktree:
     pass
@@ -158,7 +228,7 @@ class heapstruct:
 
 class testcases:
     def __init__(self):
-        pass
+        self.disp = display()
 
     def TC_binarysearchtree(self):
         # Create Instance Of Binary Search Tree Class
@@ -173,9 +243,9 @@ class testcases:
         bst.sethead(bst.insert(bst.gethead(),1))
         bst.sethead(bst.insert(bst.gethead(),6))
         # Display Binary Search Tree
-        bst.display(bst.gethead(), "inorder")
-        bst.display(bst.gethead(), "preorder")
-        bst.display(bst.gethead(), "postorder")
+        self.disp.display(bst.gethead(), "inorder")
+        self.disp.display(bst.gethead(), "preorder")
+        self.disp.display(bst.gethead(), "postorder")
 
     def TC_binarytree(self):
         #create instance of binary tree
@@ -186,8 +256,8 @@ class testcases:
         btree.sethead(btree.insert(btree.gethead(), 40))
         btree.sethead(btree.insert(btree.gethead(), 10))
         # Display Binary Tree
-        btree.display(btree.gethead(), "inorder")
-        print btree.gethead()
+        self.disp.display(btree.gethead(), "inorder")
+
 
 
 def main():
