@@ -34,19 +34,20 @@ class Dnode:
         self.__rightchild = rightchild
 
 class AVLDnode(Dnode):
-    __heigth = None
+    __height = None
     def __init__(self, value = None, height = None, leftchild = None, rightchild = None):
-        self.__heigth = height
+        self.__height = height
         Dnode.__init__(self, value, leftchild, rightchild)
 
     # Get Functions
-    def getheigth(self):
-        return self.__heigth
+    def getheight(self):
+        return self.__height
 
     # Set Functions
     def setheight(self, height = None):
-        self.__heigth = height
+        self.__height = height
 
+# Class to display tree values
 class display:
     def __int__(self):
         pass
@@ -154,56 +155,102 @@ class avltree:
         self.__head = node
 
     def insert(self, node = None, key = None):
-        pass
+        if node == None:
+            return AVLDnode(key, 1)
+        else:
+            if(node.getvalue() > key):
+                node.setleftchild(self.insert(node.getleftchild(),key))
+            elif(node.getvalue() < key):
+                node.setrightchild(self.insert(node.getrightchild(),key))
+
+        node.setheight(self.__newheight(node))
+
+        balance  = self.__getbalance(node)
+
+        nodeL = node.getleftchild()
+        nodeR = node.getrightchild()
+
+        if balance > 1:
+            if key < nodeL.getvalue():
+                print "rotating right"
+                return self.__rotateright(node)
+
+            elif key > nodeL.getvalue():
+                print "rotating left right"
+                node.setleftchild(self.__rotateleft(node.getleftchild()))
+                return self.__rotateright(node)
+
+        if balance < -1:
+            if key > nodeR.getvalue():
+                print "rotating left"
+                return self.__rotateleft(node)
+
+            elif key < nodeR.getvalue():
+                print "rotating right left"
+                node.setrightchild(self.__rotateright(node.getrightchild()))
+                return self.__rotateleft(node)
+
+        return node
 
     def __rotateleft(self, node= None):
-        newhead = node.getrightchild()
-        temp = newhead.getleftchild()
+        if node != None:
+            newhead = node.getrightchild()
+            temp = newhead.getleftchild()
 
-        newhead.setleftchild(node)
-        node.setrightchild(temp)
+            newhead.setleftchild(node)
+            node.setrightchild(temp)
 
-        newheadL = newhead.getleftchild()
-        newheadR = newhead.getrightchild()
+            newhead.setheight(self.__newheight(newhead))
+            node.setheight(self.__newheight(node))
 
-        newhead.setheight(1 + max(newheadL.getheight(), newheadR.getheight()))
-
-        nodeL = node.getleftchild()
-        nodeR = node.getrightchild()
-
-        node.setheight(1 + max(nodeL.getheight(), nodeR.getheight()))
-
-        return newhead
+            return newhead
 
     def __rotateright(self, node = None):
-        newhead = node.getleftchild()
-        temp = newhead.getrightchild()
+        if node != None:
+            newhead = node.getleftchild()
+            temp = newhead.getrightchild()
 
-        newhead.setrightchild(node)
-        node.setleftchild(temp)
+            newhead.setrightchild(node)
+            node.setleftchild(temp)
 
-        newheadL = newhead.getleftchild()
-        newheadR = newhead.getrightchild()
+            newhead.setheight(self.__newheight(newhead))
+            node.setheight(self.__newheight(node))
 
-        newhead.setheight(1 + max(newheadL.getheight(), newheadR.getheight()))
-
-        nodeL = node.getleftchild()
-        nodeR = node.getrightchild()
-
-        node.setheight(1 + max(nodeL.getheight(), nodeR.getheight()))
-
-        return newhead
+            return newhead
 
     def __getbalance(self, node = None):
-        if node == None:
-            return 0;
-        else:
-            leftnode = node.getleftchild()
-            rightnode = node.getrightchild()
-            bal = leftnode.getheight() - rightnode.getheight()
-            return bal
+        if node != None:
+            nodeL = node.getleftchild()
+            nodeR = node.getrightchild()
 
+            if nodeL == None:
+                Lheight = 0
+            else:
+                Lheight = nodeL.getheight()
 
+            if nodeR == None:
+                Rheight = 0
+            else:
+                Rheight = nodeR.getheight()
+
+            return (Lheight - Rheight)
+
+    def __newheight(self, node= None):
+       if node != None:
+            nodeL = node.getleftchild()
+            nodeR = node.getrightchild()
+
+            if nodeL == None:
+                Lheight = 0
+            else:
+                Lheight = nodeL.getheight()
+
+            if nodeR == None:
+                Rheight = 0
+            else:
+                Rheight = nodeR.getheight()
+
+            return(1 + max(Lheight, Rheight))
 
 class redblacktree:
     pass
@@ -234,18 +281,15 @@ class testcases:
         # Create Instance Of Binary Search Tree Class
         bst = binarysearchtree()
         # Generating Binary Search Tree by inserting element by element
-        bst.sethead(bst.insert(bst.gethead(),10))
-        bst.sethead(bst.insert(bst.gethead(),20))
-        bst.sethead(bst.insert(bst.gethead(),5))
-        bst.sethead(bst.insert(bst.gethead(),40))
         bst.sethead(bst.insert(bst.gethead(),50))
-        bst.sethead(bst.insert(bst.gethead(),100))
-        bst.sethead(bst.insert(bst.gethead(),1))
-        bst.sethead(bst.insert(bst.gethead(),6))
+        bst.sethead(bst.insert(bst.gethead(),30))
+        bst.sethead(bst.insert(bst.gethead(),70))
+        bst.sethead(bst.insert(bst.gethead(),20))
+        bst.sethead(bst.insert(bst.gethead(),10))
+
         # Display Binary Search Tree
-        self.disp.display(bst.gethead(), "inorder")
+        print "********* BST Prorder ****************"
         self.disp.display(bst.gethead(), "preorder")
-        self.disp.display(bst.gethead(), "postorder")
 
     def TC_binarytree(self):
         #create instance of binary tree
@@ -256,14 +300,31 @@ class testcases:
         btree.sethead(btree.insert(btree.gethead(), 40))
         btree.sethead(btree.insert(btree.gethead(), 10))
         # Display Binary Tree
-        self.disp.display(btree.gethead(), "inorder")
+        print "********* Binary tree Prorder ****************"
+        self.disp.display(btree.gethead(), "preorder")
+
+    def TC_AVLtree(self):
+        # Create Instance of AVL Tree Class
+        AVLtree = avltree()
+        # Insert Elements
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 50))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 30))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 70))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 20))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 10))
+
+        # Display AVL Tree
+        print "********* AVL tree Prorder ****************"
+        self.disp.display(AVLtree.gethead(), "preorder")
+
 
 
 
 def main():
     tc = testcases()
     tc.TC_binarysearchtree()
-    tc.TC_binarytree()
+    #tc.TC_binarytree()
+    tc.TC_AVLtree()
 
 if __name__ == '__main__':
     main()
