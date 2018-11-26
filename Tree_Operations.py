@@ -154,45 +154,61 @@ class avltree:
     def sethead(self, node = None):
         self.__head = node
 
-    def insert(self, node = None, key = None):
+    def insert(self, node = None, key = None, debug = False):
         if node == None:
             return AVLDnode(key, 1)
         else:
             if(node.getvalue() > key):
-                node.setleftchild(self.insert(node.getleftchild(),key))
+                node.setleftchild(self.insert(node.getleftchild(),key, debug))
             elif(node.getvalue() < key):
-                node.setrightchild(self.insert(node.getrightchild(),key))
+                node.setrightchild(self.insert(node.getrightchild(),key, debug))
 
-        node.setheight(self.__newheight(node))
+        if debug:
+            print "Currently Operating on node = " + str(node.getvalue()) + \
+            " of height = " + str(node.getheight()) + \
+            " and Balance Factor not yet calculated "
 
-        balance  = self.__getbalance(node)
+        node.setheight(self.__newheight(node, debug))
+
+        balance  = self.__getbalance(node, debug)
+
+        if debug:
+            print "Currently Operating on node = " + str(node.getvalue()) + \
+            " of New height = " + str(node.getheight()) + \
+            " and New Balance Factor = " + str(balance)
 
         nodeL = node.getleftchild()
         nodeR = node.getrightchild()
 
         if balance > 1:
             if key < nodeL.getvalue():
-                print "rotating right"
-                return self.__rotateright(node)
+                if debug:
+                    print "rotating right " + str(node.getvalue())
+                return self.__rotateright(node, debug)
 
             elif key > nodeL.getvalue():
-                print "rotating left right"
-                node.setleftchild(self.__rotateleft(node.getleftchild()))
-                return self.__rotateright(node)
+                if debug:
+                    print "rotating left " + str(nodeL.getvalue()) \
+                    + " followed with rotating right " + str(node.getvalue())
+                node.setleftchild(self.__rotateleft(nodeL, debug))
+                return self.__rotateright(node, debug)
 
         if balance < -1:
             if key > nodeR.getvalue():
-                print "rotating left"
-                return self.__rotateleft(node)
+                if debug:
+                    print "rotating left " + str(node.getvalue())
+                return self.__rotateleft(node, debug)
 
             elif key < nodeR.getvalue():
-                print "rotating right left"
-                node.setrightchild(self.__rotateright(node.getrightchild()))
-                return self.__rotateleft(node)
+                if debug:
+                    print "rotating right  " + str(nodeR.getvalue()) \
+                    + " followed with rotating left " + str(node.getvalue())
+                node.setrightchild(self.__rotateright(nodeR, debug))
+                return self.__rotateleft(node, debug)
 
         return node
 
-    def __rotateleft(self, node= None):
+    def __rotateleft(self, node= None, debug = False):
         if node != None:
             newhead = node.getrightchild()
             temp = newhead.getleftchild()
@@ -200,12 +216,18 @@ class avltree:
             newhead.setleftchild(node)
             node.setrightchild(temp)
 
-            newhead.setheight(self.__newheight(newhead))
-            node.setheight(self.__newheight(node))
+            node.setheight(self.__newheight(node, debug))
+            newhead.setheight(self.__newheight(newhead, debug))
+
+            if debug:
+                print "__rotateleft() : New head  = " + str(newhead.getvalue())+ \
+                " with new height = " + str(newhead.getheight()) + \
+                " node = " + str(node.getvalue()) + \
+                " with new height = " + str(node.getheight())
 
             return newhead
 
-    def __rotateright(self, node = None):
+    def __rotateright(self, node = None, debug = False):
         if node != None:
             newhead = node.getleftchild()
             temp = newhead.getrightchild()
@@ -213,12 +235,20 @@ class avltree:
             newhead.setrightchild(node)
             node.setleftchild(temp)
 
-            newhead.setheight(self.__newheight(newhead))
-            node.setheight(self.__newheight(node))
+            node.setheight(self.__newheight(node, debug))
+            newhead.setheight(self.__newheight(newhead, debug))
+
+            if debug:
+                print "__rotateright() : New head  = " + str(newhead.getvalue())+ \
+                " with new height = " + str(newhead.getheight()) + \
+                " node = " + str(node.getvalue()) + \
+                " with new height = " + str(node.getheight())
 
             return newhead
 
-    def __getbalance(self, node = None):
+    # This will calculate balance of at each node after
+    # addition of new node in a tree
+    def __getbalance(self, node = None, debug = False):
         if node != None:
             nodeL = node.getleftchild()
             nodeR = node.getrightchild()
@@ -233,9 +263,17 @@ class avltree:
             else:
                 Rheight = nodeR.getheight()
 
+            if debug:
+                print "__newheight() : left tree height = " + str(Lheight) + \
+                " of left node value = " + str(nodeL.getvalue()) if nodeL else str("__newheight() : Left Node is None")
+                print "__newheight() : right tree height  = " + str(Rheight) + \
+                " of right node Value  = " + str(nodeR.getvalue()) if  nodeR else str(" __newheight(): Right Node is None")
+
             return (Lheight - Rheight)
 
-    def __newheight(self, node= None):
+    # This will calculate new height after addition of new node
+    # or after rotation in a tree.
+    def __newheight(self, node= None, debug = False):
        if node != None:
             nodeL = node.getleftchild()
             nodeR = node.getrightchild()
@@ -249,6 +287,12 @@ class avltree:
                 Rheight = 0
             else:
                 Rheight = nodeR.getheight()
+
+            if debug:
+                print "__newheight() : left tree height = " + str(Lheight) + \
+                " of left node value = " + str(nodeL.getvalue()) if nodeL else str("__newheight() : Left Node is None")
+                print "__newheight() : right tree height  = " + str(Rheight) + \
+                " of right node Value  = " + str(nodeR.getvalue()) if  nodeR else str(" __newheight(): Right Node is None")
 
             return(1 + max(Lheight, Rheight))
 
@@ -307,22 +351,26 @@ class testcases:
         # Create Instance of AVL Tree Class
         AVLtree = avltree()
         # Insert Elements
-        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 50))
-        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 30))
-        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 70))
-        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 20))
-        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 10))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 50, False))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 30, False))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 70, False))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 20, False))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 10, False))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 40, False))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 100, False))
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 150, True))
 
         # Display AVL Tree
         print "********* AVL tree Prorder ****************"
         self.disp.display(AVLtree.gethead(), "preorder")
 
-
-
+        # Display AVL Tree
+        print "********* AVL tree iorder ****************"
+        self.disp.display(AVLtree.gethead(), "inorder")
 
 def main():
     tc = testcases()
-    tc.TC_binarysearchtree()
+    #tc.TC_binarysearchtree()
     #tc.TC_binarytree()
     tc.TC_AVLtree()
 
