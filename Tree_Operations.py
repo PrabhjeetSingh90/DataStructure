@@ -7,6 +7,7 @@
 #
 #-------------------------------------------------------------------------------
 import Queue
+import array
 
 class Dnode:
     __value = None
@@ -70,8 +71,11 @@ class display:
                 self.display(node.getrightchild(), "postorder")
                 print (" postorder node value = " + str(node.getvalue()))
 
-# Complete Binary Tree
-class binarytree:
+#################
+# In a complete binary tree. All levels are completely filled except possibly
+# the last level and the last level have all the keys as left as possible.
+################
+class Completebinarytree:
     __head = None
     def __init__(self, node = None):
         self.__head = node
@@ -296,6 +300,37 @@ class avltree:
 
             return(1 + max(Lheight, Rheight))
 
+#################
+# This is a complete binary tree. All levels are completely filled except possibly
+# the last level and the last level have all the keys as left as possible.
+# In Min Heap, The key at root must be minimum among all the keys in the binary heap
+# In Max Heap, The key at root must be maximum among all the keys in the binary heap
+################
+class heapstruct:
+    __arr = None
+    def __init__(self):
+        self.__arr = array.array("i")
+
+    def insert(self, key = None):
+        # Insert element in the end
+        self.__arr.insert(len(self.__arr), key)
+        # fetch the index of last element
+        index = len(self.__arr) - 1
+        # check and correct Min/Max heap propery if more than one element in the array
+        if index > 0:
+            while (index != 0 and (self.__arr[index] > self.__arr[self.parent(index)])):
+                temp = self.__arr[self.parent(index)]
+                self.__arr[self.parent(index)] = self.__arr[index]
+                self.__arr[index] = temp
+                index = self.parent(index)
+
+    def parent(self, index= -1):
+        if index >= 0:
+            return (index - 1)/2
+
+    def display(self):
+        print self.__arr
+
 class redblacktree:
     pass
 
@@ -314,14 +349,12 @@ class suffixtree:
 class huffmantree:
     pass
 
-class heapstruct:
-    pass
-
 class testcases:
     def __init__(self):
         self.disp = display()
 
     def TC_binarysearchtree(self):
+        print "********* START: Binary Search Tree Test cases ****************"
         # Create Instance Of Binary Search Tree Class
         bst = binarysearchtree()
         # Generating Binary Search Tree by inserting element by element
@@ -330,24 +363,25 @@ class testcases:
         bst.sethead(bst.insert(bst.gethead(),70))
         bst.sethead(bst.insert(bst.gethead(),20))
         bst.sethead(bst.insert(bst.gethead(),10))
-
         # Display Binary Search Tree
-        print "********* BST Prorder ****************"
         self.disp.display(bst.gethead(), "preorder")
+        print "********* END: Binary Search Tree Test cases ****************"
 
     def TC_binarytree(self):
+        print "********* START: Complete Binary Tree Test cases ****************"
         #create instance of binary tree
-        btree = binarytree()
+        btree = Completebinarytree()
         # Generate Binary Tree by inserting element by element
         btree.sethead(btree.insert(btree.gethead(), 50))
         btree.sethead(btree.insert(btree.gethead(), 30))
         btree.sethead(btree.insert(btree.gethead(), 40))
         btree.sethead(btree.insert(btree.gethead(), 10))
         # Display Binary Tree
-        print "********* Binary tree Prorder ****************"
         self.disp.display(btree.gethead(), "preorder")
+        print "********* END: Complete Binary Tree Test cases ****************"
 
     def TC_AVLtree(self):
+        print "********* START: AVL Tree Test cases ****************"
         # Create Instance of AVL Tree Class
         AVLtree = avltree()
         # Insert Elements
@@ -358,21 +392,35 @@ class testcases:
         AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 10, False))
         AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 40, False))
         AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 100, False))
-        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 150, True))
-
+        AVLtree.sethead(AVLtree.insert(AVLtree.gethead(), 150, False))
         # Display AVL Tree
-        print "********* AVL tree Prorder ****************"
         self.disp.display(AVLtree.gethead(), "preorder")
-
         # Display AVL Tree
-        print "********* AVL tree iorder ****************"
         self.disp.display(AVLtree.gethead(), "inorder")
+        print "********* END: AVL Tree Test cases ****************"
+
+    def TC_Binaryheap(self):
+        print "********* START: Binary Heap Test cases ****************"
+        #Create Instance of Binary Heap
+        bheap = heapstruct()
+        # Insert Elements
+        bheap.insert(10)
+        bheap.insert(20)
+        bheap.insert(15)
+        bheap.insert(18)
+        bheap.insert(16)
+        bheap.insert(30)
+        bheap.insert(25)
+        # Display Element
+        bheap.display()
+        print "********* END: Binary Heap Test cases ****************"
 
 def main():
     tc = testcases()
-    #tc.TC_binarysearchtree()
-    #tc.TC_binarytree()
+    tc.TC_binarysearchtree()
+    tc.TC_binarytree()
     tc.TC_AVLtree()
+    tc.TC_Binaryheap()
 
 if __name__ == '__main__':
     main()
