@@ -9,6 +9,7 @@
 import Queue
 import array
 
+# Node for Binary tree
 class Dnode:
     __value = None
     __leftchild = None
@@ -34,6 +35,7 @@ class Dnode:
     def setrightchild(self, rightchild = None):
         self.__rightchild = rightchild
 
+# Node for AVL Tree. Inherited from Dnode
 class AVLDnode(Dnode):
     __height = None
     def __init__(self, value = None, height = None, leftchild = None, rightchild = None):
@@ -47,6 +49,21 @@ class AVLDnode(Dnode):
     # Set Functions
     def setheight(self, height = None):
         self.__height = height
+
+# Node for Red Black Tree. Inherited from Dnode
+class RBnode(Dnode):
+    __color = None
+    def __init__(self, value = None, color = None, leftchild = None, rightchild = None):
+        self.__color = color
+        Dnode.__init__(self, value, leftchild, rightchild)
+
+    #Get Function
+    def getcolor(self):
+        return self.__color
+
+    #Set Function
+    def setcolor(self, color= None):
+        self.__color = color
 
 # Class to display tree values
 class display:
@@ -70,6 +87,43 @@ class display:
                 self.display(node.getleftchild(), "postorder")
                 self.display(node.getrightchild(), "postorder")
                 print (" postorder node value = " + str(node.getvalue()))
+
+
+class TreeRotations:
+    def __init__(self):
+        pass
+
+    def rotateleft(self, node= None, debug = False):
+        if node != None:
+            newhead = node.getrightchild()
+            temp = newhead.getleftchild()
+
+            newhead.setleftchild(node)
+            node.setrightchild(temp)
+
+            if debug:
+                print "__rotateleft() : New head  = " + str(newhead.getvalue())+ \
+                " with new height = " + str(newhead.getheight()) + \
+                " node = " + str(node.getvalue()) + \
+                " with new height = " + str(node.getheight())
+
+            return newhead
+
+    def rotateright(self, node = None, debug = False):
+        if node != None:
+            newhead = node.getleftchild()
+            temp = newhead.getrightchild()
+
+            newhead.setrightchild(node)
+            node.setleftchild(temp)
+
+            if debug:
+                print "__rotateright() : New head  = " + str(newhead.getvalue())+ \
+                " with new height = " + str(newhead.getheight()) + \
+                " node = " + str(node.getvalue()) + \
+                " with new height = " + str(node.getheight())
+
+            return newhead
 
 #################
 # In a complete binary tree. All levels are completely filled except possibly
@@ -331,23 +385,156 @@ class heapstruct:
     def display(self):
         print self.__arr
 
-class redblacktree:
-    pass
+################
+# This is a binary search tree with following properties
+# 1. the recent search element becomes the root
+# 2. if the element in the search is not found than last
+#    visted element becomes the root
+# 3. the recent inserted element become the root
+# This reduces the search time for most frequently accessed elements
+#################
 
 class splaytree:
-    pass
+    __head = None
+    def __init__(self, node = None):
+        print "********* splaytree: This is incomplete class and still under progress ****************"
+        self.__head = node
+        self.rotation = TreeRotations()
+
+    def gethead(self):
+        return self.__head
+
+    def sethead(self, node= None):
+        self.__head = node
+
+    def insert(self, node = None, key = None):
+        if key == None:
+            return node
+        if ((node == None) and (key != None)):
+            return Dnode(key)
+        if ((node != None) and (key != None)):
+            node = self.__splay(node, key)
+
+        if node.getvalue() == key:
+            return node
+        else:
+            newnode = Dnode(key)
+            if node.getvalue() > key:
+                newnode.setrightchild(node)
+                newnode.setleftchild(node.getleftchild())
+                node.setleftchild(None)
+            else:
+                newnode.setleftchild(node)
+                newnode.setrightchild(node.getrightchild())
+                node.setrightchild(None)
+            return newnode
+
+    def __splay(self, node= None, key = None):
+        if ((node.getvalue() == key) or (node == None)):
+            return node
+
+        if node.getvalue() > key:
+            if node.getleftchild() == None:
+                return node
+
+            nodeL = node.getleftchild()
+
+            if(nodeL.getvalue() > key):
+                nodeL.setleftchild(self.__splay(nodeL.getleftchild(), key))
+                nodeL = self.rotation.rotateright(nodeL)
+            else:
+                nodeL.setrightchild(self.__splay(nodeL.getrightchild(), key))
+                if nodeL.getrightchild() != None:
+                    nodeL = self.rotation.rotateleft(nodeL)
+
+            if nodeL.getleftchild() == None:
+                return nodeL
+            else:
+                return self.rotation.rotateright(nodeL)
+
+        else:
+            if node.getrightchild() == None:
+                return node
+
+            nodeR = node.getrightchild()
+
+            if nodeR.getvalue() > key:
+                nodeR.setleftchild(self.__splay(nodeR.getleftchild(), key))
+                nodeR = self.rotation.rotateleft(nodeR)
+            else:
+                nodeR.setrightchild(self.__splay(nodeR.getrightchild(), key))
+                if nodeR.getleftchild() != None:
+                    nodeR = self.rotation.rotateright(nodeR)
+
+            if nodeR.getrightchild() == None:
+                return nodeR
+            else:
+                return self.rotation.rotateleft(nodeR)
+
+##################
+# This is another self balancing Binary Search Tree with following properties
+# 1. Every Node has a color. either red or black
+# 2. Root is always black
+# 3. There are no two adjacent red nodes. (A red node cannot have a red parent or child)
+# 4. Every Path from Root to its descendant NULL have the same umber of black node.
+##################
+class redblacktree:
+    __head = None
+    def __init__(self, node = None):
+        self.__head = node
+
+    def gethead(self):
+        return self.__head
+
+    def sethead(self, node= None):
+        self.__head = node
+
+    def insert(self, node = None, key = None, debug = False):
+        pass
 
 class narytree:
-    pass
+    __head = None
+    def __init__(self, node = None):
+        self.__head = node
+
+    def gethead(self):
+        return self.__head
+
+    def sethead(self, node= None):
+        self.__head = node
 
 class triestruct:
-    pass
+    __head = None
+    def __init__(self, node = None):
+        self.__head = node
+
+    def gethead(self):
+        return self.__head
+
+    def sethead(self, node= None):
+        self.__head = node
 
 class suffixtree:
-    pass
+    __head = None
+    def __init__(self, node = None):
+        self.__head = node
+
+    def gethead(self):
+        return self.__head
+
+    def sethead(self, node= None):
+        self.__head = node
 
 class huffmantree:
-    pass
+    __head = None
+    def __init__(self, node = None):
+        self.__head = node
+
+    def gethead(self):
+        return self.__head
+
+    def sethead(self, node= None):
+        self.__head = node
 
 class testcases:
     def __init__(self):
@@ -415,12 +602,51 @@ class testcases:
         bheap.display()
         print "********* END: Binary Heap Test cases ****************"
 
+    def TC_splaytree(self):
+        print "********* START: splay Tree Test cases ****************"
+        # Create Instance of Splay tree
+        stree = splaytree()
+        # insert Element
+        stree.sethead(stree.insert(stree.gethead(), 100))
+        stree.sethead(stree.insert(stree.gethead(), 50))
+        stree.sethead(stree.insert(stree.gethead(), 150))
+
+         # Display Splay  Tree
+        self.disp.display(stree.gethead(), "inorder")
+        print "********* END: splay Tree Test cases ******************"
+
+    def TC_redblacktree(self):
+        print "********* START: Red Black Tree Test cases ****************"
+        print "********* END: Red Black Tree Test cases ****************"
+
+    def TC_narytree(self):
+        print "********* START: Nary Tree Test cases ****************"
+        print "********* END: Nary Tree Test cases ****************"
+
+    def TC_triestruct(self):
+        print "********* START: Tries Tree Test cases ****************"
+        print "********* END: Tries Tree Test cases ****************"
+
+    def TC_suffixtree(self):
+        print "********* START: siffix Tree Test cases ****************"
+        print "********* END: siffix Tree Test cases ****************"
+
+    def TC_huffmantree(self):
+        print "********* START: huffman Tree Test cases ****************"
+        print "********* END: huffman Tree Test cases ****************"
+
 def main():
     tc = testcases()
     tc.TC_binarysearchtree()
     tc.TC_binarytree()
     tc.TC_AVLtree()
     tc.TC_Binaryheap()
+    tc.TC_redblacktree()
+    tc.TC_splaytree()
+    tc.TC_narytree()
+    tc.TC_triestruct()
+    tc.TC_suffixtree()
+    tc.TC_huffmantree()
 
 if __name__ == '__main__':
     main()
