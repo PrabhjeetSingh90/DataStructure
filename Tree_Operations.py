@@ -397,7 +397,6 @@ class heapstruct:
 class splaytree:
     __head = None
     def __init__(self, node = None):
-        print "********* splaytree: This is incomplete class and still under progress ****************"
         self.__head = node
         self.rotation = TreeRotations()
 
@@ -407,13 +406,17 @@ class splaytree:
     def sethead(self, node= None):
         self.__head = node
 
-    def insert(self, node = None, key = None):
-        if key == None:
+    def insert(self, node = None, key = None, debug = False):
+        if key == None: # nothing to be done if key is none
             return node
+        # This is the first node in the tree
         if ((node == None) and (key != None)):
             return Dnode(key)
+        # This is not the first node
         if ((node != None) and (key != None)):
-            node = self.__splay(node, key)
+            node = self.__splay(node, key, debug)
+            if debug:
+                print "The return value from __splay() == " + str(node.getvalue())
 
         if node.getvalue() == key:
             return node
@@ -429,8 +432,8 @@ class splaytree:
                 node.setrightchild(None)
             return newnode
 
-    def __splay(self, node= None, key = None):
-        if ((node.getvalue() == key) or (node == None)):
+    def __splay(self, node= None, key = None, debug =False):
+        if ((node == None) or (node.getvalue() == key)):
             return node
 
         if node.getvalue() > key:
@@ -439,18 +442,30 @@ class splaytree:
 
             nodeL = node.getleftchild()
 
+            if debug:
+                print "The value of current node == " + str(node.getvalue()) + \
+                " The value of left child ==" + str(nodeL.getvalue())
+
             if(nodeL.getvalue() > key):
                 nodeL.setleftchild(self.__splay(nodeL.getleftchild(), key))
-                nodeL = self.rotation.rotateright(nodeL)
+                if debug:
+                    print "Right rotating in left subtree == " + str(nodeL.getvalue())
+                node = self.rotation.rotateright(node)
             else:
                 nodeL.setrightchild(self.__splay(nodeL.getrightchild(), key))
                 if nodeL.getrightchild() != None:
-                    nodeL = self.rotation.rotateleft(nodeL)
+                    if debug:
+                        print "left rotating in left subtree(when right child is not NULL) == " \
+                        + str(nodeL.getvalue())
+                    node = self.rotation.rotateleft(node)
+
+            if debug:
+                print "Head Node after one rotation in left subtree == " + str(node.getvalue())
 
             if nodeL.getleftchild() == None:
-                return nodeL
+                return node
             else:
-                return self.rotation.rotateright(nodeL)
+                return self.rotation.rotateright(node)
 
         else:
             if node.getrightchild() == None:
@@ -458,18 +473,31 @@ class splaytree:
 
             nodeR = node.getrightchild()
 
+            if debug:
+                print "The value of current node == " + str(node.getvalue()) + \
+                " The value of right child ==" + str(nodeR.getvalue()) + \
+                "  The key valye paased in == " + str(key)
+
             if nodeR.getvalue() > key:
-                nodeR.setleftchild(self.__splay(nodeR.getleftchild(), key))
-                nodeR = self.rotation.rotateleft(nodeR)
-            else:
                 nodeR.setrightchild(self.__splay(nodeR.getrightchild(), key))
                 if nodeR.getleftchild() != None:
-                    nodeR = self.rotation.rotateright(nodeR)
+                    if debug:
+                        print "right rotating in right subtree(when left child is not NULL) == " \
+                        + str(nodeR.getvalue())
+                    node = self.rotation.rotateright(node)
+            else:
+                nodeR.setrightchild(self.__splay(nodeR.getrightchild(), key))
+                if debug:
+                    print "Left rotating in Right subtree == " + str(nodeR.getvalue())
+                node = self.rotation.rotateleft(node)
+
+            if debug:
+                print "Head Node after one rotation in right subtree == " + str(node.getvalue())
 
             if nodeR.getrightchild() == None:
-                return nodeR
+                return node
             else:
-                return self.rotation.rotateleft(nodeR)
+                return self.rotation.rotateleft(node)
 
 ##################
 # This is another self balancing Binary Search Tree with following properties
@@ -607,12 +635,13 @@ class testcases:
         # Create Instance of Splay tree
         stree = splaytree()
         # insert Element
-        stree.sethead(stree.insert(stree.gethead(), 100))
-        stree.sethead(stree.insert(stree.gethead(), 50))
-        stree.sethead(stree.insert(stree.gethead(), 150))
-
+        stree.sethead(stree.insert(stree.gethead(), 100, False))
+        stree.sethead(stree.insert(stree.gethead(), 50, False))
+        stree.sethead(stree.insert(stree.gethead(), 150, False))
+        stree.sethead(stree.insert(stree.gethead(), 120, False))
+        stree.sethead(stree.insert(stree.gethead(), 110, True))
          # Display Splay  Tree
-        self.disp.display(stree.gethead(), "inorder")
+        self.disp.display(stree.gethead(), "preorder")
         print "********* END: splay Tree Test cases ******************"
 
     def TC_redblacktree(self):
