@@ -65,6 +65,27 @@ class RBnode(Dnode):
     def setcolor(self, color= None):
         self.__color = color
 
+# Basic Node for Trie
+class Tnode():
+    __isend = None
+    __chidren = None
+
+    def __init__(self, chidren = 26, end = False):
+        self.__chidren = [None]* chidren
+        self.__isend = end
+
+    def getisend(self):
+        return self.__isend
+
+    def setisend(self, end = False):
+        self.__isend = end
+
+    def setchildren(self, node = None, child = None):
+        self.__chidren[child] = node
+
+    def getchildren(self, child = None):
+        return self.__chidren[child]
+
 # Class to display tree values
 class display:
     def __int__(self):
@@ -88,7 +109,7 @@ class display:
                 self.display(node.getrightchild(), "postorder")
                 print (" postorder node value = " + str(node.getvalue()))
 
-
+# Class to perform rotations on binary search trees
 class TreeRotations:
     def __init__(self):
         pass
@@ -498,6 +519,67 @@ class splaytree:
                 return node
             else:
                 return self.rotation.rotateleft(node)
+############
+# This is a tree that store strings.
+# Maximum number of children of a node is equal to size of alphabet.
+# Trie supports search, insert and delete operations in O(L) time where L is length of key.
+############
+class triestruct:
+    __head = None
+    def __init__(self, node = None):
+        self.__head = Tnode()
+
+    def gethead(self):
+        return self.__head
+
+    def sethead(self, node= None):
+        self.__head = node
+
+    def insert(self, node = None, word= None):
+        # head is none
+        if node == None :
+            return False
+        # Word is none
+        if ((node != None) and (word == None)):
+            return False
+
+        # get the length of word
+        length = len(word)
+
+        # Traverse charcter by charcter and insert
+        for val in range(length):
+            index = self.__getindex(word[val])
+            if node.getchildren(index) == None:
+                node.setchildren(Tnode(), index)
+                node = node.getchildren(index)
+            node.setisend(True)
+
+        return True
+
+    def search(self, node = None, word = None):
+         # head is none
+        if node == None :
+            return False
+        # Word is none
+        if ((node != None) and (word == None)):
+            return False
+
+        # get the length of word
+        length = len(word)
+
+         # Traverse charcter by charcter and insert
+        for val in range(length):
+            index = self.__getindex(word[val])
+            if node.getchildren(index) == None:
+                return False
+            else:
+                node = node.getchildren(index)
+
+        return node.getisend()
+
+    def __getindex(self, char = None):
+        char = char.lower()
+        return(ord(char) - 97)
 
 ##################
 # This is another self balancing Binary Search Tree with following properties
@@ -519,28 +601,6 @@ class redblacktree:
 
     def insert(self, node = None, key = None, debug = False):
         pass
-
-class narytree:
-    __head = None
-    def __init__(self, node = None):
-        self.__head = node
-
-    def gethead(self):
-        return self.__head
-
-    def sethead(self, node= None):
-        self.__head = node
-
-class triestruct:
-    __head = None
-    def __init__(self, node = None):
-        self.__head = node
-
-    def gethead(self):
-        return self.__head
-
-    def sethead(self, node= None):
-        self.__head = node
 
 class suffixtree:
     __head = None
@@ -564,6 +624,9 @@ class huffmantree:
     def sethead(self, node= None):
         self.__head = node
 
+########
+# This class is created to test various tree structures.
+########
 class testcases:
     def __init__(self):
         self.disp = display()
@@ -639,22 +702,33 @@ class testcases:
         stree.sethead(stree.insert(stree.gethead(), 50, False))
         stree.sethead(stree.insert(stree.gethead(), 150, False))
         stree.sethead(stree.insert(stree.gethead(), 120, False))
-        stree.sethead(stree.insert(stree.gethead(), 110, True))
+        stree.sethead(stree.insert(stree.gethead(), 110, False))
          # Display Splay  Tree
         self.disp.display(stree.gethead(), "preorder")
         print "********* END: splay Tree Test cases ******************"
 
+    def TC_triestruct(self):
+        print "********* START: Tries Tree Test cases ****************"
+        trie = triestruct()
+        # Insert Words
+        trie.insert(trie.gethead(), "hello")
+        trie.insert(trie.gethead(), "world")
+        trie.insert(trie.gethead(), "This")
+        trie.insert(trie.gethead(), "is")
+        trie.insert(trie.gethead(), "Prabhjeet")
+        # Search Words
+        print trie.search(trie.gethead(),"hello")
+        print trie.search(trie.gethead(),"world")
+        print trie.search(trie.gethead(),"this")
+        print trie.search(trie.gethead(),"is")
+        print trie.search(trie.gethead(),"ishu")
+        print trie.search(trie.gethead(),"prabhjeet")
+
+        print "********* END: Tries Tree Test cases ****************"
+
     def TC_redblacktree(self):
         print "********* START: Red Black Tree Test cases ****************"
         print "********* END: Red Black Tree Test cases ****************"
-
-    def TC_narytree(self):
-        print "********* START: Nary Tree Test cases ****************"
-        print "********* END: Nary Tree Test cases ****************"
-
-    def TC_triestruct(self):
-        print "********* START: Tries Tree Test cases ****************"
-        print "********* END: Tries Tree Test cases ****************"
 
     def TC_suffixtree(self):
         print "********* START: siffix Tree Test cases ****************"
@@ -670,10 +744,9 @@ def main():
     tc.TC_binarytree()
     tc.TC_AVLtree()
     tc.TC_Binaryheap()
-    tc.TC_redblacktree()
     tc.TC_splaytree()
-    tc.TC_narytree()
     tc.TC_triestruct()
+    tc.TC_redblacktree()
     tc.TC_suffixtree()
     tc.TC_huffmantree()
 
