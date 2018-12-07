@@ -92,7 +92,6 @@ class display:
         pass
 
     def display(self, node= None, type = "inorder"):
-        #Displaying in Inorder Traversal
         if type == "inorder":
             if node:
                 self.display(node.getleftchild(), "inorder")
@@ -108,6 +107,19 @@ class display:
                 self.display(node.getleftchild(), "postorder")
                 self.display(node.getrightchild(), "postorder")
                 print (" postorder node value = " + str(node.getvalue()))
+        elif type == "levelorder":
+            if node:
+                Q = Queue.Queue(100)
+                Q.put(node)
+                while(Q.empty() == False):
+                    node = Q.get()
+                    print("Level order Node Value  = " + str(node.getvalue()))
+                    if node.getleftchild() != None:
+                        Q.put(node.getleftchild())
+                    if node.getrightchild() != None:
+                        Q.put(node.getrightchild())
+        else:
+            print("ERROR : Invalid Traversal type ")
 
 # Class to perform rotations on binary search trees
 class TreeRotations:
@@ -190,6 +202,44 @@ class Completebinarytree:
                     Q.put(newnode.getrightchild())
         return node # Return the head value back.
 
+    # Assuming all keys are unique
+    def remove(self, node = None, key = None):
+        if node == None:
+            print "ERROR: Invalid Head"
+            return
+        if key == None:
+            print "ERROR : Invalid Key"
+            return
+        # Create Queue
+        Q = Queue.Queue(100)
+        # Add head to Queue
+        Q.put(node)
+        while(Q.empty() == False):
+            newnode = Q.get()
+            if newnode.getvalue() == key:
+                backup = newnode
+            if newnode.getleftchild() != None:
+                Q.put(newnode.getleftchild())
+            if newnode.getrightchild() != None:
+               Q.put(newnode.getrightchild())
+        backup.setvalue(newnode.getvalue())
+
+        # Delete the last node.
+        Q.put(node)
+        while(Q.empty() == False):
+            out = Q.get()
+            if out.getleftchild() == newnode:
+                out.setleftchild(None)
+                break
+            else:
+                Q.put(out.getleftchild())
+
+            if out.getrightchild() == newnode:
+               out.setrightchild(None)
+               break
+            else:
+                Q.put(out.getrightchild())
+
 #############
 # This is an ordered binary tree where all the elements in the left subtree is
 # less than root and all the elements on right subtree is  greater than root
@@ -206,16 +256,35 @@ class binarysearchtree:
     def sethead(self, node= None):
         self.__head = node
 
+    # Assuning All keys are unique
     def insert(self, node = None, key = None):
         if (node == None):
             node = Dnode(key)
         else:
             if(node.getvalue() > key):
                 node.setleftchild(self.insert(node.getleftchild(),key))
-            elif(node.getvalue() < key):
+            else:
                 node.setrightchild(self.insert(node.getrightchild(),key))
         return node
 
+    def remove(self, node = None, key = None):
+        if node == None:
+            return node
+
+        if(node.getvalue() > key):
+            node.setleftchild(self.remove(node.getleftchild(), key))
+        elif(node.getvalue() < key):
+            node.setrightchild(self.remove(node.getrightchild(), key))
+        else:
+            if((node.getleftchild() == None) and (node.getrightchild == None)):
+                node = None
+            elif((node.getleftchild() != None) and (node.getrightchild == None)):
+                node = node.getleftchild()
+            elif((node.getleftchild() == None) and (node.getrightchild != None)):
+                node = node.getrightchild()
+            else:
+                pass
+            return node
 
 #############
 # This is a self balancing Binary Search tree where the height difference
@@ -651,11 +720,26 @@ class testcases:
         btree = Completebinarytree()
         # Generate Binary Tree by inserting element by element
         btree.sethead(btree.insert(btree.gethead(), 50))
+        btree.sethead(btree.insert(btree.gethead(), 60))
+        btree.sethead(btree.insert(btree.gethead(), 70))
         btree.sethead(btree.insert(btree.gethead(), 30))
         btree.sethead(btree.insert(btree.gethead(), 40))
         btree.sethead(btree.insert(btree.gethead(), 10))
+
         # Display Binary Tree
-        self.disp.display(btree.gethead(), "preorder")
+        self.disp.display(btree.gethead(), "levelorder")
+        print "------------------------------------"
+
+        # Remove Elements
+        btree.remove(btree.gethead(), 10)
+        self.disp.display(btree.gethead(), "levelorder")
+        print "------------------------------------"
+        btree.remove(btree.gethead(), 50)
+        self.disp.display(btree.gethead(), "levelorder")
+        print "------------------------------------"
+        btree.remove(btree.gethead(), 30)
+        self.disp.display(btree.gethead(), "levelorder")
+        print "------------------------------------"
         print "********* END: Complete Binary Tree Test cases ****************"
 
     def TC_AVLtree(self):
@@ -740,8 +824,8 @@ class testcases:
 
 def main():
     tc = testcases()
-    tc.TC_binarysearchtree()
     tc.TC_binarytree()
+    tc.TC_binarysearchtree()
     tc.TC_AVLtree()
     tc.TC_Binaryheap()
     tc.TC_splaytree()
